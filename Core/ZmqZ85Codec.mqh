@@ -1,19 +1,22 @@
 //+------------------------------------------------------------------+
-//|   Security/ZmqZ85Codec.mqh                                       |
+//|   Core/ZmqZ85Codec.mqh                                           |
 //+------------------------------------------------------------------+
 
 #ifndef MQL_ZMQ_Z85_CODEC_MQH
 #define MQL_ZMQ_Z85_CODEC_MQH
+#property strict
 
-#include "../Lang/Native.mqh"
+#include "Native.mqh"
 #import "libzmq.dll"
+
+//
 long zmq_z85_encode(uchar &dest[], const uchar &data[], ulong size);
 long zmq_z85_decode(uchar &dest[], const uchar &str[]);
 int zmq_curve_keypair(uchar &z85_public_key[], uchar &z85_secret_key[]);
 int zmq_curve_public(uchar &z85_public_key[], const uchar &z85_secret_key[]);
 #import
 
-//+------------------------------------------------------------------+
+//
 class ZmqZ85Codec
 {
 public:
@@ -26,7 +29,7 @@ public:
    static bool   derivePublicKeyRaw(uchar &public_key[], const uchar &secret_key[]);
 };
 
-//+------------------------------------------------------------------+
+//
 bool ZmqZ85Codec::encode(string &z85_encoded_string, const uchar &binary_data[])
 {
    const int data_size = ArraySize(binary_data);
@@ -48,7 +51,7 @@ bool ZmqZ85Codec::encode(string &z85_encoded_string, const uchar &binary_data[])
    return (StringLen(z85_encoded_string) > 0);
 }
 
-//+------------------------------------------------------------------+
+//
 string ZmqZ85Codec::encode(const uchar &binary_data[])
 {
    string result = "";
@@ -56,7 +59,7 @@ string ZmqZ85Codec::encode(const uchar &binary_data[])
    return result;
 }
 
-//+------------------------------------------------------------------+
+//
 bool ZmqZ85Codec::decode(const string z85_encoded_string, uchar &binary_data[])
 {
    const int str_len = StringLen(z85_encoded_string);
@@ -66,22 +69,22 @@ bool ZmqZ85Codec::decode(const string z85_encoded_string, uchar &binary_data[])
       return false;
    }
    uchar string_buffer[];
-   StringToUtf8(z85_encoded_string, string_buffer, true); // Must be null-terminated for native call
-   ArrayResize(binary_data, (int)(str_len * 0.8)); // Destination buffer for decoded binary data
+   StringToUtf8(z85_encoded_string, string_buffer, true);
+   ArrayResize(binary_data, (int)(str_len * 0.8));
    long decoded_len = zmq_z85_decode(binary_data, string_buffer);
-   if(decoded_len == 0) // Zero indicates error from zmq_z85_decode
+   if(decoded_len == 0)
    {
-      ArrayResize(binary_data, 0); // Clear array on failure
+      ArrayResize(binary_data, 0);
       return false;
    }
-   ArrayResize(binary_data, (int)decoded_len); // Resize to actual decoded length
+   ArrayResize(binary_data, (int)decoded_len);
    return true;
 }
 
-//+------------------------------------------------------------------+
+//
 bool ZmqZ85Codec::generateKeyPair(string &z85_public_key, string &z85_secret_key)
 {
-   uchar pub_buf[41], sec_buf[41]; // Z85 keys are 40 chars + 1 null terminator
+   uchar pub_buf[41], sec_buf[41];
    if(zmq_curve_keypair(pub_buf, sec_buf) == 0)
    {
       z85_public_key = StringFromUtf8(pub_buf);
@@ -93,14 +96,14 @@ bool ZmqZ85Codec::generateKeyPair(string &z85_public_key, string &z85_secret_key
    return false;
 }
 
-//+------------------------------------------------------------------+
+//
 string ZmqZ85Codec::derivePublicKey(const string z85_secret_key)
 {
-   if(StringLen(z85_secret_key) != 40) // Z85 secret keys are 40 characters long
+   if(StringLen(z85_secret_key) != 40)
       return "";
    uchar sec_buf[];
-   StringToUtf8(z85_secret_key, sec_buf, true); // Pass as null-terminated UTF-8
-   uchar pub_buf[41]; // Buffer for the output public key (40 chars + null)
+   StringToUtf8(z85_secret_key, sec_buf, true);
+   uchar pub_buf[41];
    if(zmq_curve_public(pub_buf, sec_buf) == 0)
    {
       return StringFromUtf8(pub_buf);
@@ -108,7 +111,7 @@ string ZmqZ85Codec::derivePublicKey(const string z85_secret_key)
    return "";
 }
 
-//+------------------------------------------------------------------+
+//
 bool ZmqZ85Codec::generateKeyPairRaw(uchar &public_key[], uchar &secret_key[])
 {
    string pub_z85, sec_z85;
@@ -119,7 +122,7 @@ bool ZmqZ85Codec::generateKeyPairRaw(uchar &public_key[], uchar &secret_key[])
       return false;
    return (ArraySize(public_key) == 32 && ArraySize(secret_key) == 32);
 }
-//+------------------------------------------------------------------+
+//
 bool ZmqZ85Codec::derivePublicKeyRaw(uchar &public_key[], const uchar &secret_key[])
 {
    if(ArraySize(secret_key) != 32)
@@ -135,5 +138,5 @@ bool ZmqZ85Codec::derivePublicKeyRaw(uchar &public_key[], const uchar &secret_ke
    return (ArraySize(public_key) == 32);
 }
 
-#endif // MQL_ZMQ_Z85_CODEC_MQH
+#endif // MQL_ZMQ_Z85_CODEC
 //+------------------------------------------------------------------+

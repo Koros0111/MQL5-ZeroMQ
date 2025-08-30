@@ -1,12 +1,11 @@
 //+------------------------------------------------------------------+
 //|   Core/ZmqAtomicCounter.mqh                                      |
 //+------------------------------------------------------------------+
-#ifndef MQL_ZMQ_ATOMICCOUNTER_MQH
-#define MQL_ZMQ_ATOMICCOUNTER_MQH
-
+#ifndef MQL_ZMQ_ATOMICCOUNTER
+#define MQL_ZMQ_ATOMICCOUNTER
 #property strict
 
-#include "../Lang/Native.mqh"
+#include "Native.mqh"
 #import "libzmq.dll"
 long zmq_atomic_counter_new();                          // Creates a new atomic counter instance.
 void zmq_atomic_counter_set(long counter, int value);   // Sets the counter's value.
@@ -16,7 +15,7 @@ int  zmq_atomic_counter_value(long counter);            // Gets the current valu
 void zmq_atomic_counter_destroy(long &counter_p);       // Destroys the atomic counter instance.
 #import
 
-//+------------------------------------------------------------------+
+//
 class ZmqAtomicCounter
 {
 private:
@@ -69,5 +68,5 @@ public:
    }
 };
 
-#endif // MQL_ZMQ_ATOMICCOUNTER_MQH
-//+------------------------------------------------------------------+
+#endif // MQL_ZMQ_ATOMICCOUNTER
+

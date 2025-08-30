@@ -1,9 +1,8 @@
 //+------------------------------------------------------------------+
-//|  Lang/MqlEnvironment.mqh                                         |
+//|  Core/MqlEnvironment.mqh                                         |
 //+------------------------------------------------------------------+
-#ifndef MQL_LANG_MQL_ENVIRONMENT_MQH
-#define MQL_LANG_MQL_ENVIRONMENT_MQH
-
+#ifndef MQL_ZMQ_ENVIRONMENT
+#define MQL_ZMQ_ENVIRONMENT
 #property strict
 
 #include "Error.mqh"
@@ -152,5 +151,5 @@ private:                                        \
 #endif
 
 
-#endif // MQL_LANG_MQL_ENVIRONMENT_MQH
-//+------------------------------------------------------------------+
+#endif // MQL_ZMQ_ENVIRONMENT
+
